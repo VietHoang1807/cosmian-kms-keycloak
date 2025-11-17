@@ -1,0 +1,38 @@
+# Production HTTPS configuration
+kms_public_url = "https://kms.example.com"
+
+[http]
+port = 443
+hostname = "0.0.0.0"
+
+[tls]
+tls_p12_file = "/etc/ssl/kms/cosmian-kms.p12"
+tls_p12_password = "a123"
+
+[idp_auth]
+jwt_auth_provider = ["http://host.docker.internal:8080/realms/cosmian-kms,http://host.docker.internal:8080/realms/cosmian-kms/protocol/openid-connect/certs"]
+
+[kms_config.http_config.oauth2_conf]
+client_id = "cosmian-cli-client" # Thay bằng Client ID của bạn trong Keycloak
+
+# Thay thế bằng địa chỉ Keycloak và Realm của bạn
+authorize_url = "http://host.docker.internal:8080/realms/cosmian-kms/protocol/openid-connect/auth"
+token_url = "http://host.docker.internal:8080/realms/cosmian-kms/protocol/openid-connect/token"
+scopes = [
+    "openid",
+    "email"
+]
+
+[db]
+database_type = "sqlite"
+sqlite_path = "./test-sqlite-data"
+cleanup_on_startup = true
+
+[logging]
+rolling_log_dir = "/var/log/cosmian"
+rust_log = "warn,cosmian_kms_server=info"
+
+[ui_config.ui_oidc_auth]
+ui_oidc_client_id = "cosmian-kms-client"
+ui_oidc_issuer_url = "http://host.docker.internal:8080/realms/cosmian-kms"
+ui_oidc_logout_url = "http://host.docker.internal:8080/realms/cosmian-kms/protocol/openid-connect/logout"
